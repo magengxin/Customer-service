@@ -1,26 +1,11 @@
 export default {
-  'menu.home': '首页',
-  'menu.dashboard': '仪表盘',
-  'menu.km': '知识管理',
-  'menu.km.category': '分类管理',
-  'menu.km.document': '文档管理',
-  'menu.pm': '产品管理',
-  'menu.pm.os': 'OS管理',
-  'menu.pm.product': '产品管理',
-  'menu.pm.category': '分类管理',
-  'menu.pm.group': '分组管理',
-  'menu.pm.exception': '异常管理',
-  'menu.pm.driver': '驱动管理',
-  'menu.pm.driver.info': '驱动管理',
-  'menu.pm.driver.category': '分类管理',
-  'menu.rpt': '报表管理',
-  'menu.rpt.km': '知识管理',
-  'menu.rpt.km.doc': '文档',
-  'menu.rpt.pm': '产品管理',
-  'menu.rpt.pm.driverClick': '驱动点击量',
-  'menu.rpt.pm.driverSurvey': '驱动调查',
-  'menu.rpt.pm.driverDetail': '驱动Rawdata',
-  'menu.ua': '权限管理',
-  'menu.ua.user': '用户管理',
-  'menu.ua.group': '组管理'
+  'menu.chat': '聊天窗口',
+  'menu.chat.record': '聊天记录',
+
+  'tabs.knowledge': '知识库',
+  'tabs.quickReply': '快捷回复',
+  'tabs.public': '公共',
+  'tabs.private': '个人',
+
+  'tabs.customer': '客户信息'
 }

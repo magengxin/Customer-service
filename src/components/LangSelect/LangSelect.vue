@@ -26,8 +26,7 @@ export default {
   },
   methods: {
     SwitchLang (row) {
-      // eslint-disable-next-line no-console
-      console.log(row)
+      this.$store.dispatch('SetLang', row.key)
     }
   }
 }

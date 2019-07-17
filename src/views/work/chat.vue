@@ -4,12 +4,12 @@
       <chat-header />
     </a-layout-header>
     <a-layout-content class="chat-nav">
-      <scroll>
+      <scroll ref="scroll" @handle-resize="handleResize">
         <chat-content :data="user.messages"></chat-content>
       </scroll>
     </a-layout-content>
     <a-layout-footer class="chat-footer">
-      <chat-editor/>
+      <chat-editor />
     </a-layout-footer>
   </a-layout>
 </template>
@@ -38,6 +38,13 @@ export default {
     ...mapGetters({
       user: "serviceObjects"
     })
+  },
+  methods: {
+    handleResize() {
+      this.$refs["scroll"].scrollTo({
+        y: "100%"
+      });
+    }
   }
 };
 </script>

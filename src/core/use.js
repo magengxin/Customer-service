@@ -14,6 +14,10 @@ import "@/components/global.less";
 import "@/components/boostrap.less";
 import "@/components/emoji.less";
 
+//图片预览
+import 'viewerjs/dist/viewer.css'
+import Viewer from 'v-viewer'
+
 import { clickoutside } from "@/utils/directive";
 
 Vue.use(Antd)
@@ -26,6 +30,8 @@ Vue.use(vuescroll, {
   },
   name: 'scroll'
 });
+Vue.use(Viewer)
+
 Vue.prototype.$moment = moment
 
 Vue.directive('clickoutside', clickoutside)

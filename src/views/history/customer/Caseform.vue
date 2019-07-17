@@ -1,8 +1,9 @@
 <template>
   <div class="caseFrom">
+    <a-form :form="form" @submit="handleSubmitContent">
     <a-row :gutter="24" style="margin-top: 10px;">
       <a-col :span="24" style="width: 100%;" class="">
-        <a-row :gutter="24" type="flex" align="middle">
+        <a-row :gutter="24" type="flex" align="top">
           <a-col :span="3" align="right">
             <span>Case模板:</span>
           </a-col>
@@ -23,14 +24,23 @@
       <a-col :span="24" style="width: 100%;" class="">
 
         <a-row :gutter="24">
-          <a-col :span="3" align="right" class="validate">
+          <a-col :span="3" align="right" class="">
             <span>Q&A</span>
           </a-col>
           <a-col :span="20">
+            <a-form-item
+            >
             <a-textarea placeholder=""
-                        v-model="caseData['caseContent']"
+                        v-decorator="[
+          'caseContent',
+          {rules: [{ required: true, message: 'Please enter the content!' }],
+            initialValue: caseData.caseContent}
+        ]"
+
                         :autosize="{ minRows: 4, maxRows: 20 }"
                         style="width: 100%; height: 120px;"></a-textarea>
+
+            </a-form-item>
           </a-col>
         </a-row>
       </a-col>
@@ -38,7 +48,7 @@
     <a-row :gutter="24" style="margin-top: 10px;">
       <a-col :span="24" style="width: 100%;" class="cloAuto">
 
-        <a-row :gutter="24" type="flex" align="middle">
+        <a-row :gutter="24" type="flex" align="top">
           <a-col :span="3" align="right">
             <span>问题内容:</span>
           </a-col>
@@ -46,77 +56,52 @@
             <a-input-search v-model="caseData.question" @search="onSearch" enterButton="搜索" size="small"></a-input-search>
 
             <scroll class="scroll-positon" v-show="scrollStatus">
-              <a-table :columns="columns" :dataSource="data" bordered :customRow="customRow">
-                <template slot="name" slot-scope="text">
-                  <a href="javascript:;">{{text}}</a>
-                </template>
+              <a-table :columns="columns" :dataSource="this.caseList" bordered :customRow="customRow" :rowKey="rowKey">
               </a-table>
             </scroll>
           </a-col>
 
-          <a-col :span="3" align="right" >
+          <a-col :span="3" align="right" class="validate">
             <span>推荐SPOS:</span>
           </a-col>
           <a-col :span="4">
-            <a-radio-group v-model="caseData.spos" class="width-radio-auto">
+            <a-form-item
+            >
+            <a-radio-group    class="width-radio-auto" @change="changeSpos"
+                              v-decorator="[
+          'spos',
+          {rules: [{ required: true, message: 'Please select the content！' }],
+            initialValue: ''}
+        ]"
+            >
               <a-radio :value="1">是</a-radio>
               <a-radio :value="0">否</a-radio>
             </a-radio-group>
+            </a-form-item>
 
           </a-col>
         </a-row>
       </a-col>
     </a-row>
-    <a-row :gutter="24" style="margin-top: 10px;">
-      <a-col :span="24" style="width: 100%;" class="">
-        <a-row :gutter="24">
-
-<!--          <a-col :span="3" align="right" >-->
-<!--            <span>CASE症状代码列表</span>-->
-<!--          </a-col>-->
-<!--          <a-col :span="4">-->
-<!--            <a-select-->
-<!--                    class="width-auto"-->
-<!--                    size="small"-->
-<!--                    v-decorator="[-->
-<!--          'select5',-->
-<!--          {rules: [{ required: true, message: 'Please select your country!' }],-->
-<!--            initialValue: caseIndex}-->
-<!--        ]"-->
-<!--                    @change="casehandleChange"-->
-<!--            >-->
-<!--              <a-select-option value="0" disabled>-&#45;&#45;请选择-&#45;&#45;</a-select-option>-->
-
-<!--              <a-select-option :value="index+1" v-for="(item,index) in caseList" :key="index">-->
-<!--                &lt;!&ndash;                <span>{{item.question}}</span>&ndash;&gt;-->
-<!--                <span>{{item.keyword}}</span>-->
-<!--                &lt;!&ndash;                <span>{{item.remark}}</span>&ndash;&gt;-->
-<!--                &lt;!&ndash;                <span>{{item.specific}}</span>&ndash;&gt;-->
-<!--                &lt;!&ndash;                <span>{{item.subCategory}}</span>&ndash;&gt;-->
-<!--                &lt;!&ndash;                <span>{{item.topCategory}}</span>&ndash;&gt;-->
-<!--              </a-select-option>-->
-
-<!--            </a-select>-->
-<!--          </a-col>-->
-        </a-row>
-      </a-col>
-    </a-row>
 
     <a-row :gutter="24" style="margin-top: 10px;">
       <a-col :span="24" style="width: 100%;" class="">
-        <a-row :gutter="24" type="flex" align="middle">
+        <a-row :gutter="24" type="flex" align="top">
 
           <a-col :span="3" align="right" class="validate">
             <span>主要类别:</span>
           </a-col>
           <a-col :span="4">
+            <a-form-item
+            >
+
             <a-select
                     class="width-auto"
                     size="small"
-                    v-model="caseData.symptomTopCategory"
                     v-decorator="[
-          'select1',
-          {rules: [{ required: true, message: 'Please select your country!' }]
+          'symptomTopCategory',
+          {rules: [{ required: true, message: 'Please select the content！' }],
+          initialValue: caseData.symptomTopCategory
             }
         ]"
                     @change="handleSymptomTopCategoryChange"
@@ -127,19 +112,21 @@
               </a-select-option>
 
             </a-select>
+            </a-form-item>
           </a-col>
           <a-col :span="3" align="right" class="validate">
             <span>子类别:</span>
           </a-col>
           <a-col :span="4">
+            <a-form-item
+            >
             <a-select
                     class="width-auto"
 
                     size="small"
-                    v-model="caseData.symptomSubCategory"
                     v-decorator="[
-          'select2',
-          {rules: [{ required: true, message: 'Please select your country!' }],
+          'symptomSubCategory',
+          {rules: [{ required: true, message: 'Please select the content！' }],
             initialValue: caseData.symptomSubCategory}
         ]"
                     @change="handleSymptomSubCategoryChange"
@@ -148,19 +135,21 @@
               <a-select-option :value="index" v-for="(item,index) in symptomSubCategory" :key="index">{{item.name}}
               </a-select-option>
             </a-select>
+            </a-form-item>
           </a-col>
           <a-col :span="3" align="right" class="validate">
             <span>详细类别:</span>
           </a-col>
           <a-col :span="4">
+            <a-form-item
+            >
             <a-select
                     class="width-auto"
 
                     size="small"
-                    v-model="caseData.symptomSpecific"
                     v-decorator="[
-          'select3',
-          {rules: [{ required: true, message: 'Please select your country!' }],
+          'symptomSpecific',
+          {rules: [{ required: true, message: 'Please select the content！' }],
             initialValue: caseData.symptomSpecific}
         ]"
             >
@@ -168,36 +157,8 @@
               <a-select-option :value="index" v-for="(item,index) in symptomSpecific" :key="index">{{item.name}}
               </a-select-option>
             </a-select>
+            </a-form-item>
           </a-col>
-        </a-row>
-      </a-col>
-    </a-row>
-
-    <a-row :gutter="24" style="margin-top: 10px;">
-      <a-col :span="24" style="width: 100%;" class="">
-        <a-row :gutter="24">
-
-<!--          <a-col :span="3" align="right">-->
-<!--            <span>CNF</span>-->
-<!--          </a-col>-->
-<!--          <a-col :span="4">-->
-<!--            <a-input v-model="caseData.CNF" class="width-auto"-->
-<!--            ></a-input>-->
-<!--          </a-col>-->
-<!--          <a-col :span="3" align="right">-->
-<!--            <span>SN</span>-->
-<!--          </a-col>-->
-<!--          <a-col :span="4">-->
-<!--            <a-input v-model="caseData.sn" class="width-auto"-->
-<!--            ></a-input>-->
-<!--          </a-col>-->
-<!--          <a-col :span="3" align="right">-->
-<!--            <span>PN</span>-->
-<!--          </a-col>-->
-<!--          <a-col :span="4">-->
-<!--            <a-input v-model="caseData.pn" class="width-auto"-->
-<!--            ></a-input>-->
-<!--          </a-col>-->
         </a-row>
       </a-col>
     </a-row>
@@ -206,39 +167,6 @@
       <a-col :span="24" style="width: 100%;" class="">
         <a-row :gutter="24" type="flex" align="middle">
 
-
-
-
-
-
-
-
-<!--          <a-col :span="3" align="right">-->
-<!--            <span>产品型号</span>-->
-<!--          </a-col>-->
-<!--          <a-col :span="4">-->
-<!--            <a-input v-model="caseData.productsNumber" class="width-auto"-->
-<!--            ></a-input>-->
-<!--          </a-col>-->
-<!--          <a-col :span="3" align="right">-->
-<!--            <span>产品线</span>-->
-<!--          </a-col>-->
-<!--          <a-col :span="4">-->
-<!--            <a-select class="width-auto"-->
-<!--                    size="small"-->
-<!--                    v-model="caseData.productsLine"-->
-<!--                    v-decorator="[-->
-<!--              'select4',-->
-<!--              {rules: [{ required: false, message: 'Please select your country!' }],-->
-<!--              initialValue: caseData.productsLine}-->
-<!--              ]">-->
-
-<!--              <a-select-option value="0" disabled>-&#45;&#45;请选择-&#45;&#45;</a-select-option>-->
-
-<!--              <a-select-option value="1">产品线1</a-select-option>-->
-<!--              <a-select-option value="2">产品线2</a-select-option>-->
-<!--            </a-select>-->
-<!--          </a-col>-->
           <a-col :span="3" align="right">
             <span>接入渠道:</span>
           </a-col>
@@ -248,12 +176,12 @@
                     size="small"
                     v-model="caseData.caseSource"
                     v-decorator="[
-          'select5',
-          {rules: [{ required: true, message: 'Please select your country!' }],
+          'caseSource',
+          {rules: [{ required: false, message: 'Please select the content！' }],
             initialValue: caseData.caseSource}
         ]"
             >
-              <a-select-option value="0" disabled>---请选择---</a-select-option>
+              <a-select-option value="10000" disabled>---请选择---</a-select-option>
 
               <a-select-option :value="item.code" v-for="item in caseSource" :key="item.code">{{item.name}}
               </a-select-option>
@@ -269,12 +197,12 @@
                     size="small"
                     v-model="caseData.caseSourceName"
                     v-decorator="[
-          'select6',
-          {rules: [{ required: true, message: 'Please select your country!' }],
-            initialValue: caseData.caseType}
+          'caseSourceName',
+          {rules: [{ required: false, message: 'Please select the content！' }],
+            initialValue: caseData.caseSourceName}
         ]"
             >
-              <a-select-option value="0" disabled>---请选择---</a-select-option>
+              <a-select-option value="10000" disabled>---请选择---</a-select-option>
 
               <a-select-option :value="item.name" v-for="item in caseSourceList" :key="item.id">{{item.name}}
               </a-select-option>
@@ -290,14 +218,14 @@
                     size="small"
                     v-model="caseData.caseType"
                     v-decorator="[
-          'select6',
-          {rules: [{ required: true, message: 'Please select your country!' }],
+          'caseType',
+          {rules: [{ required: false, message: 'Please select the content！' }],
             initialValue: caseData.caseType}
         ]"
             >
-              <a-select-option value="0" disabled>---请选择---</a-select-option>
+              <a-select-option value="10000" disabled>---请选择---</a-select-option>
 
-              <a-select-option :value="item.id" v-for="item in caseTypeList" :key="item.id">{{item.caseTypeName}}
+              <a-select-option :value="item.id" v-for="item in caseTypeList" :key="item.id">{{item.name}}
               </a-select-option>
             </a-select>
           </a-col>
@@ -306,49 +234,22 @@
       </a-col>
     </a-row>
 
-    <a-row :gutter="24" style="margin-top: 10px;">
-      <a-col :span="24" style="width: 100%;" class="">
-        <a-row :gutter="24">
-<!--          <a-col :span="3" align="right">-->
-<!--            <span>操作系统</span>-->
-<!--          </a-col>-->
-<!--          <a-col :span="4">-->
-<!--            <a-select-->
-<!--                    class="width-auto"-->
-<!--                    size="small"-->
-<!--                    v-model="caseData.servers"-->
-<!--                    v-decorator="[-->
-<!--          'select6',-->
-<!--          {rules: [{ required: true, message: 'Please select your country!' }],-->
-<!--            initialValue: caseData.servers}-->
-<!--        ]"-->
-
-<!--            >-->
-<!--              <a-select-option value="0" disabled>-&#45;&#45;请选择-&#45;&#45;</a-select-option>-->
-
-<!--              <a-select-option :value="item.id" v-for="item in serviceList" :key="item.id">{{item.name}}-->
-<!--              </a-select-option>-->
-<!--            </a-select>-->
-<!--          </a-col>-->
-<!--          <a-col :span="3" align="right">-->
-<!--            <span>固体/BIOS版本</span>-->
-<!--          </a-col>-->
-<!--          <a-col :span="4">-->
-<!--            <a-input v-model="caseData.servers" class="width-auto"></a-input>-->
-<!--          </a-col>-->
-        </a-row>
+    <a-row :gutter="24" style="margin-top: 10px;" type="flex" justify="space-around">
+      <a-col :span="2">
+        <a-button type="primary" style="height: 24px;" @click="addQAModal" :disabled='!disabledButon'>新增Note</a-button>
+      </a-col>
+      <a-col :span="6">
+        <a-button type="primary"
+                  html-type="submit"
+                  style=" height: 24px;"  :disabled='disabledButon'>保存</a-button>
+        <a-button type="primary"
+                  html-type="submit"
+                  style="margin-left: 10px;height: 24px;"
+                  :disabled='disabledCloseButon'>关闭
+        </a-button>
       </a-col>
     </a-row>
-
-    <a-row :gutter="24" style="margin-top: 10px;">
-      <a-col :span="8" offset="1">
-        <a-button type="primary" style="height: 24px;" @click="addQAModal">新增Note</a-button>
-      </a-col>
-      <a-col :span="6" :offset="8">
-        <a-button type="primary"  style="margin:0 20px; height: 24px;" @click="saveQAHandel">保存</a-button>
-        <a-button type="primary" style="height: 24px;" @click="closeQAHandel">关闭</a-button>
-      </a-col>
-    </a-row>
+    </a-form>
 
     <a-modal
             v-model="addQAModalVisible"
@@ -358,24 +259,29 @@
     >
       <template slot="footer">
         <a-button key="back" @click="addQAModalhandleCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="loading" @click="addQAModalhandleOk">保存</a-button>
+        <a-button key="submit" type="primary" :loading="loading" @click.stop.prevent="addQAModalhandleOk">保存</a-button>
       </template>
 
-      <a-form  :form="form" @submit="handleSubmit">
+      <a-form  :form="form1" @submit="handleSubmit">
         <a-form-item
-                label="邮箱"
+                label="内容"
                 :label-col="formLayout.labelCol"
                 :wrapper-col="formLayout.wrapperCol"
         >
-          <a-input v-model='caseData.workerEmail'
-                   v-decorator="[ 'Email' ]"
-                   @blur="validateEmailBlur"
-                   placeholder="Please input your workerEmail"
-          ></a-input>
-          <a-button type="primary" ref="aa" class="submitPpacity"
-                    html-type="submit"  >提交
-          </a-button>
+          <a-textarea placeholder=""
+                      :autosize="{ minRows: 4, maxRows: 20 }"
+                      style="width: 100%; height: 120px;"
+                      v-decorator="[
+          'caseContent',
+          {rules: [{ required: true, message: 'Please enter the content' }],
+            }
+        ]"
+          ></a-textarea>
+
         </a-form-item>
+        <a-button type="primary" ref="aa" class="submitPpacity"
+                  html-type="submit">提交
+        </a-button>
       </a-form>
     </a-modal>
 
@@ -392,48 +298,31 @@
     postCase,
     putCase,
     postCaseSymptom,
-    postCaseTreeSymptom
+    postCaseTreeSymptom,
+    postCaseContent
   } from "@/api/history";
-
-  const columns = [{
-    title: 'Name',
-    dataIndex: 'name',
-    scopedSlots: { customRender: 'name' },
-  }, {
-    title: 'Cash Assets',
-    className: 'column-money',
-    dataIndex: 'money',
-  }, {
-    title: 'Address',
-    dataIndex: 'address',
-  }];
-
-  const data = [{
-    key: '1',
-    name: 'John Brown',
-    money: '￥300,000.00',
-    address: 'New York No. 1 Lake Park',
-  }, {
-    key: '2',
-    name: 'Jim Green',
-    money: '￥1,256,000.00',
-    address: 'London No. 1 Lake Park',
-  }, {
-    key: '3',
-    name: 'Joe Black',
-    money: '￥120,000.00',
-    address: 'Sidney No. 1 Lake Park',
-  }];
-
 
 export default {
   name: "CaseForm",
   data() {
     return {
-      data,
-      columns,
+      disabledButon: true, // 按钮状态
+      disabledCloseButon: true, // 关闭按钮状态
+      data: [],
+      columns: [{
+        title: '关键字',
+        dataIndex: 'keyword',
+      },{
+        title: '问题',
+        className: 'column-money',
+        dataIndex: 'question',
+      },{
+        title: '备注',
+        dataIndex: 'remark',
+      }],
       scrollStatus: false, // 搜索结果
       form: this.$form.createForm(this),
+      form1: this.$form.createForm(this),
       formLayout: {
         labelCol: {span: 4},
         wrapperCol: {span: 14},
@@ -466,7 +355,7 @@ export default {
       }], // CASE类型列表
       caseSource: [{
         name: "惠普服务公众号",
-        code: "0"
+        code: "10000"
       }], // CASE来源
       serviceList: [{
         createTs: "2019-05-14 11:25:16",
@@ -480,8 +369,9 @@ export default {
       symptomSpecific:[],
       caseData: {
         caseContent: '',
+        caseContentTemp: '',
         customerId: 0,
-        caseSourceName: '',
+        caseSourceName: '10000',
         question: '',
         symptomTopCategory: '100',
         symptomSubCategory: '100',
@@ -491,10 +381,10 @@ export default {
         pn: '',
         productsNumber: '1',
         productsLine: '0',
-        caseSource: '0',
-        caseType: '0',
+        caseSource: '10000',
+        caseType: '10000',
         servers: '0',
-        spos: 1,
+        spos: '',
         workerEmail: '', // 添加Note弹框 workerEmail
       }, // CASE数据
       caseList: [], // case列表
@@ -502,17 +392,21 @@ export default {
       addQAModalVisible: false, // 添加Note弹框
       addQATitle: '', // 添加Note弹框 title
       caseIndex: '1', // case列表默认选项
-      customRow: (record, index) => {
+      customRow: (record) => {
         return {
           on: {
             click: () => {
-              console.log("record", record);
+              this.caseData.symptomTopCategory = record.symptomTopCategory;
+              this.caseData.symptomSubCategory = record.symptomSubCategory;
+              this.caseData.symptomSpecific = record.symptomSpecific;
               this.scrollStatus = false;
             }
           }
         };
+      },
+      rowKey: (record) => {
+        return record.keyword
       }
-
     };
   },
   created() {
@@ -522,27 +416,29 @@ export default {
     ...mapState({
       caseInfo: state => state.history.caseInfo,
       customerInfo: state => state.history.customerInfo,
+      emptyForm: state => state.history.emptyForm,
     }),
   },
   watch: {
     caseInfo() {
-      console.log("this.caseInfo", this.caseInfo);
+      let { status , contents} = this.caseInfo;
+
+      if (status == 'close') {
+        this.disabledButon = true;
+        this.disabledCloseButon = true
+      } else if(status == 'open' && contents[0].content){
+        this.disabledButon = false;
+        this.disabledCloseButon = false
+      }else{
+        this.disabledButon = false;
+        this.disabledCloseButon = true
+      }
       this.caseData.caseContent = this.caseInfo.contents[0].content;
       this.caseData.caseType = this.caseInfo.caseType;
       this.caseData.caseSource = this.caseInfo.channelName;
       this.caseData.caseSourceName = this.caseInfo.channelSource;
       this.caseData.spos = this.caseInfo.spos;
       this.caseData.question = this.caseInfo.symptomQuestion;
-
-      // let symptomTopCategory = this.caseInfo.symptomTopCategory
-      // let symptomSubCategory = this.caseInfo.symptomSubCategory
-      // let symptomSpecific = this.caseInfo.symptomSpecific
-      // symptomTopCategory  = symptomTopCategory.charAt(symptomTopCategory.length - 1)
-      // symptomSubCategory  = symptomSubCategory.charAt(symptomSubCategory.length - 1)
-      // symptomSpecific  = symptomSpecific.charAt(symptomSpecific.length - 1)
-
-      // console.log("symptomTopCategory", symptomTopCategory);
-      // console.log("symptomTopCategory", typeof symptomTopCategory);
 
       this.caseData.symptomTopCategory = this.caseInfo.symptomTopCategory;
       if(this.caseData.symptomTopCategory != 100) {
@@ -552,11 +448,20 @@ export default {
         this.caseData.symptomSpecific = this.caseInfo.symptomSpecific;
       }
 
-      this.$store.commit('changeSpinning', false); // 修改全局页面loading
+      setTimeout(() => {
+        this.$store.commit('changeSpinning', false);
+      }, 1000);
+    },
+    emptyForm(){
+      for (var i in this.caseData) {
+        this.caseData[i] = ''
+      }
     }
   },
   methods: {
     init() {
+      // 获取case信息
+      this.getInfo();
       // 查询CASE模板列表
       this.postCaseTemplate();
       // 查询CASE类型列表
@@ -564,9 +469,40 @@ export default {
       // 查询CASE来源
       this.getCaseSource();
       // 查询操作系统列表
-      this.getServiceList()
+      this.getServiceList();
       // 查询CASE症状代码树
       this.postCaseTreeSymptom()
+    },
+    // 获取case信息
+    getInfo(){
+      let { status , contents} = this.caseInfo;
+
+      if (status == 'close') {
+        this.disabledButon = true;
+        this.disabledCloseButon = true
+      } else if(status == 'open' && contents[0].content){
+        this.disabledButon = false;
+        this.disabledCloseButon = false
+      }else{
+        this.disabledButon = false;
+        this.disabledCloseButon = true
+      }
+
+      this.caseData.caseContent = this.caseInfo.contents[0].content;
+      this.caseData.caseType = this.caseInfo.caseType;
+      this.caseData.caseSource = this.caseInfo.channelName;
+      this.caseData.caseSourceName = this.caseInfo.channelSource;
+      this.caseData.spos = this.caseInfo.spos;
+      this.caseData.question = this.caseInfo.symptomQuestion;
+
+      this.caseData.symptomTopCategory = this.caseInfo.symptomTopCategory;
+      if(this.caseData.symptomTopCategory != 100) {
+        this.caseData.symptomSubCategory = this.caseInfo.symptomSubCategory;
+      }
+      if(this.caseData.symptomSubCategory != 100) {
+        this.caseData.symptomSpecific = this.caseInfo.symptomSpecific;
+      }
+
     },
     // 查询CASE模板列表
     postCaseTemplate() {
@@ -602,7 +538,6 @@ export default {
           .then(res => {
             if (res.code === 0) {
               this.symptomTopCategory = res.data
-              console.log("res.data", res.data);
             }
           })
           .catch(error => {
@@ -627,12 +562,6 @@ export default {
           .then(res => {
             if (res.code === 0) {
               this.caseSource = res.data;
-              this.caseSource.push(
-                  {
-                    code: '0001',
-                    name: "marketing"
-                  }
-              )
             }
           })
           .catch(error => {
@@ -647,8 +576,8 @@ export default {
         pageNo: 1,
         pageSize: 10,
       };
-      this.scrollStatus = true
-return
+      this.scrollStatus = true;
+
       postCaseSymptom(obj)
           .then(res => {
             if (res.code === 0) {
@@ -659,50 +588,93 @@ return
           .catch(error => {
             console.log("error", error);
           });
-
     },
     clearModal(){
       this.form.resetFields();
     },
-    // 验证邮箱
-    validateEmailBlur(e) {
-      const validateEmailReg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$");
+    // 保存功能
+    handleSubmitContent(e) {
+      e.preventDefault();
+      this.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {
+          let {nickname,name,phone,email,sex,city,address,remark}= this.customerInfo;
 
-      if (e.target.value && !validateEmailReg.test(e.target.value)) {
-        const arr = [{
-          message: '您输入的邮箱格式不正确!',
-          field: 'Email',
-        }];
-        this.form.setFields({Email: {value: e.target.value, errors: arr}})
-      } else {
-        this.form.setFields({Email: {value: e.target.value, errors: ''}});
-        this.caseData.workerEmail = e.target.value
-      }
+          let id = this.caseInfo.caseId;
+          values['id'] = id;
+          values['nickname'] = nickname;
+          values['name'] = name;
+          values['phone'] = phone;
+          values['email'] = email;
+          values['sex'] = sex;
+          values['city'] = city;
+          values['address'] = address;
+          values['remark'] = remark;
+
+          values['status'] = 1;
+
+          putCase(id, values)
+              .then(res => {
+                if (res.code === 0) {
+                  this.$message.success('更新成功！');
+
+                  this.$store.commit('changeSpinning', true); // 修改全局页面loading
+
+                  setTimeout(() => {
+                    this.$store.commit('changeSpinning', false);
+
+                    this.$store.commit('changeCaseInfoIndex', 10000); // 修改 case table 默认索引
+                    this.disabledCloseButon = false;
+                    this.form.resetFields()
+
+                  }, 1000);
+                }else{
+                  this.$message.warning(res.msg);
+                }
+              })
+              .catch(error => {
+                console.log("error", error);
+              });
+        }
+      });
     },
     // 保存功能
     handleSubmit(e) {
       e.preventDefault();
-      this.form.validateFieldsAndScroll((err, values) => {
+      this.form1.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          this.caseData.workerEmail = values['Email']
+
+          this.loading = true;
+          setTimeout(() => {
+            this.addQAModalVisible = false;
+            this.loading = false;
+
+            let { caseId, contents } = this.caseInfo;
+            let { email } = this.$store.getters.agent;
+            values['caseId'] = caseId;
+            values['workerEmail'] = email;
+
+            this.postCaseContent(values);
+
+            let moment = this.$moment;
+            moment = moment().format('MMMM Do YYYY, h:mm:ss a');
+
+            this.caseData['caseContent'] = '';
+            this.caseData['caseContent'] += contents[0].content;
+            this.caseData['caseContent'] += '\n' + values['caseContent'];
+            this.caseData['caseContent'] += '\n' + 'Notes          ';
+            this.caseData['caseContent'] += moment + '         ';
+            this.caseData['caseContent'] += email;
+
+            this.caseData.caseContentTemp = '';
+            this.form.resetFields();
+
+          }, 1000);
         }
       });
     },
     // 模版改变状态
     handleChange(tag) {
       this.showConfirm(tag.id);
-
-      return
-      this.caseTempList.forEach(v => {
-        if (v.id === tag.id) {
-          this.caseData['caseContent'] = v.templateContent;
-          this.caseTypeList.forEach(T => {
-            if (T.id === tag.id) {
-              this.caseData.caseType = T.caseTypeName;
-            }
-          })
-        }
-      });
     },
     // 模版改变状态
     casehandleChange(value,option) {
@@ -722,12 +694,6 @@ return
       // 重置
       this.caseData.symptomSubCategory = '100';
       this.caseData.symptomSpecific = '100'
-
-      // this.symptomTopCategory.forEach((v,i) => {
-      //   if(i == this.caseData.symptomTopCategory){
-      //     console.log("this.symptomTopCategory[i]", this.symptomTopCategory[this.caseData.symptomTopCategory]);
-      //   }
-      // })
     },
     // 子类别
     handleSymptomSubCategoryChange(value, option) {
@@ -736,126 +702,11 @@ return
 
       // 重置
       this.caseData.symptomSpecific = '100'
-
-      // this.symptomTopCategory.forEach((v,i) => {
-      //   if(i == this.caseData.symptomTopCategory){
-      //     console.log("this.symptomTopCategory[i]", this.symptomTopCategory[this.caseData.symptomTopCategory]);
-      //   }
-      // })
-    },
-    // 保存
-    saveQAHandel() {
-      console.log("this.caseData", this.caseData);
-
-      let customerInfo = this.customerInfo;
-      let id = this.caseInfo.caseId;
-
-      this.caseData['nickName'] = customerInfo.nickName;
-      this.caseData['name'] = customerInfo.name;
-      this.caseData['phone'] = customerInfo.phone;
-      this.caseData['email'] = this.caseData.workerEmail;
-      this.caseData['sex'] = customerInfo.sex;
-      this.caseData['city'] = customerInfo.city;
-      this.caseData['address'] = customerInfo.address;
-      this.caseData['remark'] = customerInfo.remark;
-
-      this.caseData['pnName'] = customerInfo.pnName || '产品名称';
-
-      this.caseData['attentionTs'] = customerInfo.attentionTs;
-
-      if (!id) {
-        let caseContent = this.caseData.caseContent;
-        let symptomTopCategory = this.caseData.symptomTopCategory;
-        let symptomSubCategory = this.caseData.symptomSubCategory;
-        let symptomSpecific = this.caseData.symptomSpecific;
-        if (!caseContent || !symptomTopCategory || !symptomSubCategory || !symptomSpecific) {
-          return false
-        }
-
-        this.caseData['customerId'] = customerInfo.id;
-
-        this.caseData['agentId'] = customerInfo.agentId || 11;
-        this.caseData['agentName'] = customerInfo.agentName || '客服';
-        this.caseData['channelCode'] = parseInt(customerInfo.channelCode) || '渠道代码';
-        this.caseData['channelName'] = customerInfo.channelName || '渠道名称';
-        this.caseData['channelSource'] = customerInfo.channelSource || '渠道来源';
-
-        this.caseData['caseTypeId'] = customerInfo.caseTypeId;
-
-        delete this.caseData.id;
-
-        postCase(this.caseData)
-            .then(res => {
-              if (res.code === 0) {
-                this.$message.success(res.msg);
-
-                for (var i in this.caseData) {
-                  this.caseData[i] = ''
-                }
-
-                this.$store.commit('changeSpinning', true); // 修改全局页面loading
-
-                setTimeout(() => {
-                  this.$store.commit('changeSpinning', false)
-                }, 1000);
-              }
-            })
-            .catch(error => {
-              console.log("error", error);
-            });
-      }else{
-        let caseContent = this.caseData.caseContent;
-        let symptomTopCategory = this.caseData.symptomTopCategory;
-        let symptomSubCategory = this.caseData.symptomSubCategory;
-        let symptomSpecific = this.caseData.symptomSpecific;
-        if (!caseContent || !symptomTopCategory || !symptomSubCategory || !symptomSpecific) {
-          return false
-        }
-
-        this.caseData['id'] = id;
-
-        this.caseData['spos'] = 0;
-        this.caseData['symptomTopCategory'] = this.caseData.symptomTopCategory;
-        this.caseData['symptomSubCategory'] = this.caseData.symptomSubCategory;
-        this.caseData['symptomSpecific'] = this.caseData.symptomSpecific;
-        this.caseData['caseTypeId'] = customerInfo.id;
-
-        putCase(id, this.caseData)
-            .then(res => {
-              if (res.code === 0) {
-                this.$message.success('更新成功！');
-
-                for (var i in this.caseData) {
-                  this.caseData[i] = ''
-                }
-                this.$store.commit('changeSpinning', true); // 修改全局页面loading
-
-                setTimeout(() => {
-                  this.$store.commit('changeSpinning', false)
-                }, 1000);
-              }
-            })
-            .catch(error => {
-              console.log("error", error);
-            });
-      }
     },
     // 关闭
     closeQAHandel() {
       let id = this.caseInfo.caseId;
-      if (!id) {
-        this.$message.warning('请选择case');
-        return false
-      }
-
       let caseContent = this.caseData.caseContent;
-      let symptomTopCategory = this.caseData.symptomTopCategory;
-      let symptomSubCategory = this.caseData.symptomSubCategory;
-      let symptomSpecific = this.caseData.symptomSpecific;
-      if (!caseContent || !symptomTopCategory || !symptomSubCategory || !symptomSpecific) {
-        return false
-      }
-
       let customerInfo = this.customerInfo;
 
       this.caseData['id'] = id;
@@ -876,6 +727,7 @@ return
       this.caseData['symptomSubCategory'] = this.caseData.symptomSubCategory;
       this.caseData['symptomSpecific'] = this.caseData.symptomSpecific;
       this.caseData['caseTypeId'] = customerInfo.id;
+      this.caseData['status'] = 0;
 
       putCase(id, this.caseData)
           .then(res => {
@@ -888,8 +740,14 @@ return
               this.$store.commit('changeSpinning', true); // 修改全局页面loading
 
               setTimeout(() => {
-                this.$store.commit('changeSpinning', false)
+                this.$store.commit('changeSpinning', false);
+
+                this.$store.commit('changeCaseInfoIndex', 10000); // 修改 case table 默认索引
+                this.disabledCloseButon = true
+
               }, 1000);
+            }else{
+              this.$message.warning(res.msg);
             }
           })
           .catch(error => {
@@ -898,36 +756,21 @@ return
     },
     addQAModalhandleOk(e) {
       this.$refs.aa.$el.click();
-
-      const validateEmailReg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$");
-      if(!validateEmailReg.test(this.caseData.workerEmail)){
-        return false
-      }
-
-      this.loading = true;
-
-      setTimeout(() => {
-        this.addQAModalVisible = false;
-        this.loading = false;
-
-        let moment = this.$moment;
-        moment = moment().format('MMMM Do YYYY, h:mm:ss a');
-
-        this.caseData['caseContent'] += '\n' + 'Note          ';
-        this.caseData['caseContent'] += moment + '         ';
-        this.caseData['caseContent'] += this.caseData.workerEmail;
-
-        this.form.resetFields();
-
-      }, 1000);
+    },
+    postCaseContent(data){
+      postCaseContent(data)
+          .then(res => {
+            if (res.code === 0) {
+              this.$message.success('添加成功');
+            }
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
     },
     addQAModalhandleCancel(e) {
       this.addQAModalVisible = false;
     },
-    handleOk() {
-
-    },
-
     showConfirm(id) {
       let list = this.caseTempList;
       let caseData = this.caseData;
@@ -937,12 +780,9 @@ return
         onOk() {
           list.forEach(v => {
             if (v.id === id) {
-              caseData['caseContent'] = v.templateContent;
-              // this.caseTypeList.forEach(T => {
-              //   if (T.id === tag.id) {
-              //     this.caseData.caseType = T.caseTypeName;
-              //   }
-              // })
+              setTimeout(() => {
+                caseData['caseContent'] = v.templateContent;
+              }, 500);
             }
           })
         },
@@ -951,6 +791,9 @@ return
         class: 'test',
       });
     },
+    changeSpos(e){
+      this.caseData.spos = e.target.value
+    }
   }
 };
 </script>

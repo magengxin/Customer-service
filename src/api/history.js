@@ -1,31 +1,32 @@
 import { axios } from '@/utils/request'
 
 const api = {
-  customerList: `/{domain}/query-page/customer`,
-  getCustomerInfo: '/{domain}/customer',
-  putCustomerInfo: '/{domain}/customer',
-  agentList: '/{domain}/query-page/agent',
-  getChannelList: '/{domain}/query-list/channel',
-  putCustomerProduct: '/{domain}/customer-product',
+  customerList: `/ice/{domain}/query-page/customer`,
+  getCustomerInfo: '/ice/{domain}/customer',
+  putCustomerInfo: '/ice/{domain}/customer',
+  agentList: '/ice/{domain}/query-page/agent',
+  getChannelList: '/ice/{domain}/query-list/channel',
+  putCustomerProduct: '/ice/{domain}/customer-product',
 
   // 客户资产信息
-  getCustomerProduct: 'cs/{domain}/user-info',
-  delCustomerProduct: 'cs/{domain}/user-product',
-  csPutCustomerProduct: 'cs/{domain}/user', // 更新客户信息
-  csPostCustomerProduct: 'cs/{domain}/user-product', // 新增客户资产
+  getCustomerProduct: '/cs/{domain}/user-info',
+  delCustomerProduct: '/cs/{domain}/user-product',
+  csPutCustomerProduct: '/cs/{domain}/user', // 更新客户信息
+  csPostCustomerProduct: '/cs/{domain}/user-product', // 新增客户资产
 
   // case
-  postCaselist: 'cm/{domain}/query-list/case',
-  postCaseTemplate: 'cm/{domain}/query-list/template', // 查询CASE模板列表
-  postCaseTypeList: 'cm/{domain}/query-list/case-type', // 查询CASE类型列表
-  getCaseSource: '{domain}/query-list/channel', // 查询CASE来源
-  putCase: 'cm{domain}/case', // 更新CASE
-  postCase: 'cm{domain}/case', // 新增CASE
-  postCaseSymptom: 'cm{domain}/query-page/symptom', // 分页查询CASE症状代码列表
-  postCaseTreeSymptom: 'cm{domain}/query-tree/symptom', // 查询CASE症状代码树
+  postCaselist: '/cm/{domain}/query-list/case',
+  postCaseTemplate: '/cm/{domain}/query-list/template', // 查询CASE模板列表
+  postCaseTypeList: '/cm/{domain}/query-list/case-type', // 查询CASE类型列表
+  getCaseSource: '/ice/{domain}/query-list/channel', // 查询CASE来源
+  putCase: '/cm/{domain}/case', // 更新CASE
+  postCase: '/cm/{domain}/case', // 新增CASE
+  postCaseSymptom: '/cm/{domain}/query-page/symptom', // 分页查询CASE症状代码列表
+  postCaseTreeSymptom: '/cm/{domain}/query-tree/symptom', // 查询CASE症状代码树
+  postCaseContent: '/cm/{domain}/case-content', // 新增CASE CONTENT(NOTE)
 
   // 操作系统
-  getServiceList: 'pm/{domain}/os', // 查询操作系统列表
+  getServiceList: '/pm/{domain}/os', // 查询操作系统列表
 };
 
 export default api
@@ -162,6 +163,15 @@ export function postCaseSymptom(data) {
 export function postCaseTreeSymptom(data) {
   return axios({
     url: api.postCaseTreeSymptom,
+    method: 'POST',
+    data: data
+  })
+}
+
+// 新增CASE CONTENT(NOTE)
+export function postCaseContent(data) {
+  return axios({
+    url: api.postCaseContent,
     method: 'POST',
     data: data
   })

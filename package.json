@@ -14,6 +14,7 @@
     "core-js": "^2.6.5",
     "moment": "^2.24.0",
     "tinymce": "^5.0.9",
+    "v-viewer": "^1.4.2",
     "vue": "^2.6.10",
     "vue-i18n": "^8.11.2",
     "vue-ls": "^3.2.1",
@@ -54,13 +55,7 @@
   },
   "browserslist": [
     "> 1%",
-    "last 2 versions"
-  ],
-  "description": "```\r yarn install\r ```",
-  "main": "babel.config.js",
-  "directories": {
-    "doc": "doc"
-  },
-  "author": "",
-  "license": "ISC"
+    "last 2 versions",
+    "ie 10"
+  ]
 }

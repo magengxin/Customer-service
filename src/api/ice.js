@@ -1,9 +1,10 @@
 import { axios } from '@/utils/request'
 
 const api = {
-  quickReplyTree: '/{domain}/query-tree/fast-reply',
-  uploadFile: '/cm/{domain}/file',
-  workgroup: '/{domain}/query-tree/workgroup'
+  //3.58.	API – 多客服查询快捷回复
+  quickReplyTree: '/ice/{domain}/query-tree_cs/fast-reply',
+  uploadFile: '/ice/{domain}/file',
+  workgroup: '/ice/{domain}/query-tree/workgroup'
 }
 
 export default api
@@ -11,10 +12,11 @@ export default api
 /**
  * 3.46.	API – 查询快速回复树
  */
-export function treeQuickReply() {
+export function treeQuickReply(body) {
   return axios({
     url: api.quickReplyTree,
-    method: 'post'
+    method: 'post',
+    data:body
   })
 }
 
@@ -22,15 +24,13 @@ export function treeQuickReply() {
  * 文件上传
  */
 export function uploadFile(file) {
+  let body = new FormData()
+  body.append('file', file)
+  body.append('isPublic', true)
   return axios({
     url: api.uploadFile,
     method: 'post',
-    data: {
-      name: file.name,
-      contentType: 'file',
-      data: file,
-      "isPublic": true
-    }
+    data: body
   })
 }
 

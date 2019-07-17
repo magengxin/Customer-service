@@ -1,9 +1,7 @@
 <template>
   <a-layout>
     <a-layout-sider width="220px">
-      <a-spin :spinning="!$store.getters.isSocketRun">
         <online></online>
-      </a-spin>
     </a-layout-sider>
     <a-layout-sider width="720px">
       <chat></chat>

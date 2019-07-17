@@ -6,8 +6,8 @@
         <a-layout-sider width="400px" class="message">
           <message></message>
         </a-layout-sider>
-    <a-layout-content>
-      <a-spin :spinning="loading">
+    <a-layout-content class="tabs-scroll">
+      <a-spin :spinning="loading" class="spingH">
         <tabs></tabs>
       </a-spin>
     </a-layout-content>

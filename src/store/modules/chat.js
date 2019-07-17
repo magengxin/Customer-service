@@ -1,7 +1,10 @@
+import Vue from 'vue'
 import notification from 'ant-design-vue/es/notification'
+import Modal from 'ant-design-vue/es/modal'
 import { filterHTMLTag } from '@/utils/string'
 import { sendMsg } from '@/utils/websocket'
 import moment from 'moment'
+import { DOMAIN } from '@/store/mutation-types'
 
 const chat = {
   state: {
@@ -40,7 +43,8 @@ const chat = {
     loading: {
       //聊天页面
       online: false
-    }
+    },
+    h: null
   },
 
   mutations: {
@@ -136,7 +140,7 @@ const chat = {
     //Pin Code
     setPinCode: (state, pinCode) => {
       state.pinCode = pinCode
-    },
+    }
   },
 
   actions: {
@@ -153,13 +157,24 @@ const chat = {
       commit('batchFormatLastTime')
     },
     /**
+     * 2.	Connect To Server
+     */
+    requestHeartbeat() {
+      const json = {
+        "timestamp": getTimestamp(),
+        "cmd": "Heartbeat"
+      }
+      sendMsg(json)
+    },
+    /**
      * 3.	Client To Server
      */
     //3.1.	接入
-    requestConnect({ force = false }) {
+    /* eslint-disable no-empty-pattern */ 
+    requestConnect({}, { force = false }) {
       const json = {
-        "timestamp": moment().format('x'),
-        "cmd": "Connect",
+        "timestamp": getTimestamp(),
+        "cmd": "Login",
         "data": {
           "force": force
         }
@@ -168,14 +183,14 @@ const chat = {
     },
     //3.2.	给客户的消息
     requestSend({ state, commit }, { sessionId, msgType = "Text", message }) {
-      const id = moment().format('x')
+      const id = moment().format('YYYY-MM-DD H:mm:ss')
       const obj = {
         msgType: msgType,
         msgContent: message,
         sendName: state.agent.nickname,
         sendFullName: state.agent.nickname,
         sendType: "Agent",
-        sendTs: moment().format('YYYY-MM-DD H:mm:ss'),
+        sendTs: id,
         sessionId: sessionId,
         isSendSuccess: -1
       }
@@ -192,8 +207,8 @@ const chat = {
 
       // Socket
       const json = {
-        "timestamp": moment().format('x'),
-        "cmd": "SendToCustomerMsg",
+        "timestamp": getTimestamp(),
+        "cmd": "SendToCustomer",
         "data": {
           "tempMsgId": id,
           "sessionId": sessionId,
@@ -209,7 +224,7 @@ const chat = {
       commit('setSessionLoading', { sessionId, loading })
 
       const json = {
-        "timestamp": moment().format('x'),
+        "timestamp": getTimestamp(),
         "cmd": "CloseSession",
         "data": {
           "sessionId": sessionId
@@ -223,7 +238,7 @@ const chat = {
       commit('setSessionLoading', { sessionId, loading: true })
 
       const json = {
-        "timestamp": moment().format('x'),
+        "timestamp": getTimestamp(),
         "cmd": "TransferSession",
         "data": {
           "sessionId": sessionId,
@@ -236,6 +251,18 @@ const chat = {
       sendMsg(json)
     },
     //3.5.	客服发起会话
+    requestCreateSession: ({ sessionId }) => {
+
+      const json = {
+        "timestamp": getTimestamp(),
+        "cmd": "CreateSession",
+        "data": {
+          "sessionId": sessionId,
+        }
+      }
+
+      sendMsg(json)
+    },
     /**
      *  * 3.6.	通知 - 客服切换接入状态
     * Open  开启
@@ -245,8 +272,8 @@ const chat = {
       commit('setLoading', { online: true })
 
       const json = {
-        "timestamp": 117832473999,
-        "cmd": "SwitchAccessStatus",
+        "timestamp": getTimestamp(),
+        "cmd": "SwitchServeStatus",
         "data": {
           "switchTo": isOnline ? "Open" : "Close"
         }
@@ -262,12 +289,16 @@ const chat = {
       dispatch(json.cmd, json)
     },
     //4.1.	响应 – 接入
-    Connect({ commit, dispatch }, json) {
+    Login({ commit, dispatch }, json) {
       if (json.code === 0) {
         commit('setAgent', json.data.agent)
         //触发 客户初始化
         dispatch('emojiOnAgentId', json.data.agent.agentId)
         dispatch('iceOnAgentId', json.data.agent.agentId)
+        commit('setPinCode', json.data.agent.pincode)
+        //DOMAIN
+        dispatch('setDomain', 'CN')
+        Vue.ls.set(DOMAIN, 'CN')
 
         json.data.sessions.forEach(e => {
           //加载状态
@@ -282,14 +313,17 @@ const chat = {
         })
         commit('setSession', json.data.sessions)
       } else {
-        notification.error({
-          message: '会话',
-          description: json.msg
-        })
+        Modal.confirm({
+          title: '异常',
+          content: json.code === 420101 ? '客服在别处登录，被踢下线,确认重新登陆吗?' : '客服已经在别处登录,确认重新登陆吗?',
+          onOk() {
+            dispatch('requestConnect', { force: true })
+          }
+        });
       }
     },
     //4.2.	响应 - 给客户的消息
-    SendToCustomerMsg({ commit }, json) {
+    SendToCustomer({ commit }, json) {
       commit('removeStackMsg', { key: json.data.tempMsgId, isSendSuccess: json.code, errormsg: json.msg })
     },
     //4.3.	响应 – 客服关闭会话
@@ -324,8 +358,13 @@ const chat = {
     CreateSession: () => {
       // 可忽略
     },
-    //4.6.	通知 - 给客服的消息
-    SendToAgentMsg: ({ state, commit }, json) => {
+    //4.6.	响应 - 客服切换服务状态
+    SwitchServeStatus: ({ commit }, json) => {
+      commit('setLoading', { online: false })
+      commit('setOnline', json.data.switchTo === 'Open')
+    },
+    //4.7.	通知 - 给客服的消息
+    SendToAgent: ({ state, commit }, json) => {
       const session = state.sessionList.find(e => e.sessionId === json.data.sessionId)
       // 更新 未读数量
       if (state.serviceObjects.sessionId != json.data.sessionId) {
@@ -338,7 +377,7 @@ const chat = {
       // 添加 聊天信息
       commit('addMessage', { sessionId: json.data.sessionId, message: json.data })
     },
-    //4.7.	通知 - 会话已创建
+    //4.8.	通知 - 会话已创建
     SessionCreated: ({ state, commit }, json) => {
       //判断会话是否已经存在
       const index = state.sessionList.findIndex(e => e.sessionId === json.data.sessionId)
@@ -353,11 +392,6 @@ const chat = {
       json.data.lastTime = json.timestamp
       json.data.formatLastTime = formatTimeInterval(json.timestamp)
       commit('addSession', json.data)
-    },
-    //4.8.	通知 - 客服接入状态更新
-    AccessStatusChanged: ({ commit }, json) => {
-      commit('setLoading', { online: false })
-      commit('setOnline', json.data.accessStatus === 'Open')
     },
     //4.9.	通知 - 排队人数更新
     QueueUpdated: ({ commit }, json) => {
@@ -385,4 +419,8 @@ export default chat
 function formatTimeInterval(time) {
   let m = moment(time, 'x')
   return m.fromNow()
+}
+
+function getTimestamp() {
+  return moment().format('YYYY-MM-DD HH:mm:ss.SSS')
 }

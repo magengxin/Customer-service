@@ -1,9 +1,9 @@
 <template>
-  <a-tabs size="small" :tabBarStyle="{margin: '0px'}" :style="{ height: '100%'}">
-    <a-tab-pane tab="公共" key="1">
+  <a-tabs size="small" class="tabs-small chat-tabs">
+    <a-tab-pane :tab="$t('tabs.public')" key="1">
       <quick-reply />
     </a-tab-pane>
-    <a-tab-pane tab="个人" key="2">
+    <a-tab-pane :tab="$t('tabs.private')" key="2">
       <private-quick-reply />
     </a-tab-pane>
   </a-tabs>

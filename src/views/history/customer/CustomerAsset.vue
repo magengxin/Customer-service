@@ -1,5 +1,5 @@
 <template>
-  <div class="customerAsset">
+  <div class="customerAsset padding-b10 border-t">
     <scroll>
       <a-table
         :columns="customerAsset"
@@ -43,26 +43,8 @@
       >{{$t('text.asset.addProducts')}}</a-button>
     </scroll>
 
-<!--    <a-modal v-model="visible" :title="modelTitle" onOk="handleOk" closable="true">-->
-<!--      <template slot="footer">-->
-<!--        <a-button key="submit" type="primary" :loading="loading" @click="handleOk">保存</a-button>-->
-<!--      </template>-->
-<!--      <a-row :gutter="24" class="mb-3">-->
-<!--        <a-col :span="6">-->
-<!--          序列号(<span style="color: red;">必填</span>)-->
-<!--          SN/Serial No-->
-<!--        </a-col>-->
-<!--        <a-col :span="18">-->
-<!--          <a-input-search class="mt-2" placeholder="input search text" enterButton/>-->
-<!--        </a-col>-->
-<!--      </a-row>-->
-<!--      <a-col>产品名称：HP EliteBook 820 G1 笔记本电脑</a-col>-->
-<!--      <a-col>产品型号(PN)： J7F86UP</a-col>-->
-<!--      <a-col>产品类型：工作站</a-col>-->
-<!--    </a-modal>-->
-
-    <a-modal v-model="visible" :title="modelTitle" @ok="handleOk" :confirmLoading="confirmLoading" closable @cancel="closeModal">
-      <a-form :layout="formLayout" :form="form">
+    <a-modal v-model="visible" :title="modelTitle" @ok="handleOk" :confirmLoading="confirmLoading" closable @cancel="closeModal" class="customer-asset">
+      <a-form :layout="formLayout" :form="form" @submit="handleSubmit">
         <a-form-item
           :label="$t('text.asset.productsLine')"
           :label-col="formItemLayout.labelCol"
@@ -70,8 +52,8 @@
         >
           <a-input
             v-decorator="[
-              editData.pl,
-              {rules: [{ required: checkNick, message: '请输入您的产品线!' }],
+              'pl',
+              {rules: [{ required: false, message: '请输入您的产品线!' }],
               initialValue: editData.pl
             }]"
           ></a-input>
@@ -83,8 +65,8 @@
         >
           <a-input
             v-decorator="[
-              editData.productName,
-              {rules: [{ required: checkNick, message: '请输入您的产品名称!' }],
+              'productName',
+              {rules: [{ required: false, message: '请输入您的产品名称!' }],
               initialValue: editData.productName
             }]"
           ></a-input>
@@ -96,7 +78,7 @@
         >
           <a-input
                    v-decorator="[
-              editData.pn,
+              'pn',
               {rules: [{ required: checkNick, message: '请输入您的产品PN!' }],
               initialValue: editData.pn
             }]"
@@ -109,7 +91,7 @@
         >
           <a-input
                    v-decorator="[
-              editData.sn,
+              'sn',
               {rules: [{ required: checkNick, message: '请输入您的产品SN!' }],
               initialValue: editData.sn
             }]"
@@ -122,18 +104,22 @@
         >
           <a-input
                    v-decorator="[
-              editData.warrantyState,
+              'warrantyJson',
               {rules: [{ required: checkNick, message: '请输入您的产品保修信息!' }],
-              initialValue: editData.warrantyState
+              initialValue: editData.warrantyJson
             }]"
           ></a-input>
         </a-form-item>
+        <button html-type="submit" ref="aa" class="submitPpacity"></button>
+
       </a-form>
     </a-modal>
   </div>
 </template>
 
 <script>
+  import {mapState} from "vuex";
+
   import {delCustomerProduct, getCustomerProduct, csPutCustomerProduct, csPostCustomerProduct} from "@/api/history";
 export default {
   name: "CustomerAsset",
@@ -199,7 +185,7 @@ export default {
         .then(res => {
           if (res.code === 0) {
             this.customerAssetData = res.data.products;
-            this.warrantyState = res.data.products[0].warrantyState
+            this.warrantyState = res.data.products[0].warrantyJson
           }
         })
         .catch(error => {
@@ -210,6 +196,9 @@ export default {
     this.closeModal()
   },
   computed: {
+    ...mapState({
+      customerInfo: state => state.history.customerInfo
+    }),
     formItemLayout () {
       const { formLayout } = this;
       return formLayout === 'horizontal' ? {
@@ -239,12 +228,19 @@ export default {
   methods: {
     // 删除客户产品信息
     del (id) {
-      const dataSource = [...this.customerAssetData];
-      this.customerAssetData = dataSource.filter(item => item.id !== id);
       delCustomerProduct(id)
           .then(res => {
             if (res.code === 0) {
-              this.$message.success('刪除成功');
+              this.$store.commit('changeSpinning', true); // 修改全局页面loading
+
+              setTimeout(() => {
+                this.$store.commit('changeSpinning', false);
+
+                const dataSource = [...this.customerAssetData];
+                this.customerAssetData = dataSource.filter(item => item.id !== id);
+
+                this.$message.success('刪除成功');
+              }, 1000);
             }
           })
           .catch(error => {
@@ -260,48 +256,30 @@ export default {
     },
     // 弹出编辑产品信息框
     showModal(tag, data) {
+      this.checkNick = true;
       if (tag == 'edit') {
-        this.checkNick = true;
         this.tag = 'edit';
         this.modelTitle = this.$t('text.asset.editProducts');
 
         this.editData = JSON.parse(JSON.stringify(data));
         delete this.editData.productLine;
       } else if (tag == 'add') {
-        this.checkNick = false;
+        this.checkNick = true;
         this.tag = 'add';
-
         this.modelTitle = this.$t('text.asset.addingProducts')
       }
       this.visible = true;
     },
     // 关闭弹框
     closeModal() {
+      this.form.resetFields();
       for (let item in this.editData){
         this.editData[item] = ''
       }
     },
     // 提交
     handleOk() {
-      if (this.tag == 'edit') {
-        this.confirmLoading = true;
-        setTimeout(() => {
-          this.confirmLoading = false;
-        }, 1000);
-
-        this.csPutCustomerProduct(this.editData.id, this.editData)
-      } else if (this.tag == 'add') {
-        this.checkNick = true;
-
-        delete this.editData.id
-
-        this.confirmLoading = true;
-        setTimeout(() => {
-          this.confirmLoading = false;
-        }, 1000);
-
-        this.csPostCustomerProduct(this.editData)
-      }
+      this.$refs.aa.click();
     },
     csPutCustomerProduct(id, data) {
       csPutCustomerProduct(id, data)
@@ -340,7 +318,33 @@ export default {
           .catch(error => {
             console.log("error", error);
           })
-    }
+    },
+    handleSubmit(e) {
+      e.preventDefault();
+      this.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {
+          let { channelCode, channelCustomerId} = this.customerInfo;
+          values['channelCode'] = channelCode;
+          values['channelCustomerId'] = channelCustomerId;
+
+          if (this.tag == 'edit') {
+            this.confirmLoading = true;
+            setTimeout(() => {
+              this.confirmLoading = false;
+            }, 1000);
+            this.csPutCustomerProduct(this.editData.id, values)
+          } else if (this.tag == 'add') {
+
+            this.confirmLoading = true;
+            setTimeout(() => {
+              this.confirmLoading = false;
+            }, 1000);
+
+            this.csPostCustomerProduct(values)
+          }
+        }
+      });
+    },
   }
 };
 </script>

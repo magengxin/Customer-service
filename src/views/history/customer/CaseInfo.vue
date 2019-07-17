@@ -1,13 +1,30 @@
 <template>
-  <div class="caseInfo">
-    <a-table
-      :columns="caseInfo"
-      :dataSource="caseData"
-      :pagination="pagination"
-      :customRow="customRow"
-      rowKey="caseId"
-      bordered
-    ></a-table>
+  <div class="caseInfo border-t">
+    <scroll>
+      <a-list
+              :dataSource="caseData"
+      >
+        <a-list-item slot="renderItem" slot-scope="item, index"
+                     @click="handleClick(item, index)"
+                     @mouseenter="enter(index)"
+                     @mouseleave="leave()"
+                     :class="{active:current == index,active1:current1 == index}"
+        >
+          <div class="w25 textalc arrow">
+            <div class="radius"></div>
+            <div>{{item.accessTs}}</div>
+          </div>
+          <div class="w10 textalc">{{item.agentName}}</div>
+          <div class="w10 textalc">{{item.status}}</div>
+          <div class="w20 textalc">{{item.caseType}}</div>
+          <div class="w10 textalc">{{item.spos}}</div>
+          <div class="w25 textalc">{{item.endTs}}</div>
+        </a-list-item>
+        <div slot="header" class="list-head flex-align-center">
+          <div v-for="item in caseInfo" :key="item.dataIndex" :class="[item.width, 'textalc']">{{item.title}}</div>
+        </div>
+      </a-list>
+    </scroll>
   </div>
 </template>
 
@@ -18,79 +35,112 @@ export default {
   name: "CaseInfo",
   data() {
     return {
+      current:null,
+      current1: 0,
       caseInfo: [
-        { title: "插入时间", dataIndex: "accessTs" },
-        { title: "客服", dataIndex: "agentName" },
-        { title: "状态", dataIndex: "status" },
-        { title: "升级类型", dataIndex: "caseType" },
-        { title: "SPOS", dataIndex: "spos" },
-        { title: "关闭时间", dataIndex: "endTs" }
+        { title: "接入时间", dataIndex: "accessTs", width: 'w25'},
+        { title: "客服", dataIndex: "agentName", width: 'w10'},
+        { title: "状态", dataIndex: "status", width: 'w10'},
+        { title: "升级类型", dataIndex: "caseType", width: 'w20'},
+        { title: "SPOS", dataIndex: "spos", width: 'w10'},
+        { title: "关闭时间", dataIndex: "endTs", width: 'w25'}
       ],
-      pagination:false,
-      customRow: (record) => {
-        return {
-          on: {
-            click: () => {
-              this.$store.commit('getCaseInfo', record); // case详情
-              this.$store.commit('changeSpinning', true); // 修改全局页面loading
-            }
-          }
-        };
-      }
-
     };
   },
   computed: {
     ...mapState({
-      caseData: state => state.history.caselist
+      caseData: state => state.history.caselist,
+      caseInfoIndex: state => state.history.caseInfoIndex,
     })
   },
-  watch: {
-    caseData() {
-      if (this.caseData.length < 6) {
-        this.pagination = false
-      } else {
-        this.pagination = {
-          pageSize: 5,
-          size: 'small'
-        }
-      }
+  watch:{
+    caseInfoIndex(){
+      this.current1 = this.caseInfoIndex;
     }
   },
+  methods: {
+    handleClick(item, index) {
+      this.current1 = index;
+      this.$store.commit('getCaseInfo', item); // case详情
+      this.$store.commit('changeCaseInfoIndex', index); // 修改 case table 默认索引
+      this.$store.commit('changeSpinning', true); // 修改全局页面loading
+      setTimeout(() => {
+        this.$store.commit('changeSpinning', false);
+      }, 1000);
+    },
+    enter( index) {
+      this.current = index;
+    },
+    leave() {
+      this.current = null;
+    },
+  }
 };
 </script>
 
 <style lang="less" scoped>
-.caseInfo /deep/ .ant-tabs-bar {
-  margin: 0 0 8px 0;
-}
-.caseInfo /deep/ .ant-form-item {
-  margin-bottom: 0px;
-}
-.caseInfo /deep/ .ant-input {
-  height: 24px;
-}
-.caseInfo /deep/ .ant-form-item-label {
-  width: 90px;
-  padding-left: 10px;
-  text-align: left;
-}
-.caseInfo /deep/ .ant-form-item-label {
-  line-height: 30px;
-}
-.caseInfo /deep/ .ant-form-item-control {
-  line-height: 30px;
-}
-.caseInfo /deep/ form textarea.ant-input {
-  width: 494px;
-}
-.caseInfo /deep/ .ant-form-item-required:before {
-  margin: 0;
-}
-.caseInfo /deep/ .ant-table-thead > tr > th{
-  padding: 5px 5px;
-}
-.caseInfo /deep/ .ant-table-tbody > tr > td{
-  padding: 5px 5px;
-}
+  .w10{
+    width: 10%;
+  }
+  .w20{
+    width: 20%;
+  }
+  .w25{
+    width: 25%;
+  }
+
+  .textalc{
+    text-align: center;
+  }
+  .active{
+    color: deepskyblue;
+  }
+  .active1{
+    color: deepskyblue;
+  }
+  .color{
+    color: #000;
+  }
+
+  .ant-list-split .ant-list-item {
+    border-bottom: none;
+  }
+
+  .caseInfo {
+    height: 200px;
+  }
+  .caseInfo .list-head{
+    color: #000;
+  }
+  .caseInfo .ant-list-item{
+    padding: 6px;
+    overflow: hidden;
+  }
+  .ant-list-item .arrow{
+    display: flex;
+    justify-items: center;
+  }
+  .ant-list-item .arrow .radius{
+    position: relative;
+    margin-right: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #EAF3F6;
+  }
+  .ant-spin-container .ant-list-item:not(:last-child) .arrow .radius:after{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -126%;
+    content: '';
+    display: block;
+    width: 4px;
+    height: 10px;
+    background: #F8F8F8;
+  }
+  .ant-list-item.active .radius,
+  .ant-list-item.active1 .radius {
+    background: #79C1E6;
+  }
 </style>

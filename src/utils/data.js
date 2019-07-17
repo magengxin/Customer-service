@@ -96,7 +96,7 @@ export function arrayFilter(source, isFun) {
       i++
       continue
     }
-    array.splice(i,1)
+    array.splice(i, 1)
   }
   return array
 }
@@ -105,6 +105,48 @@ export function arrayFilter(source, isFun) {
  * 深拷贝
  * @param {深拷贝} source 
  */
-function copy(source) {
+export function copy(source) {
   return JSON.parse(JSON.stringify(source))
+}
+
+
+/**
+ * 数组-删除子项
+ */
+export function arrayRemoveItem(array, isFun, boolRemovePrototype = true) {
+  let i = 0
+  while (i < array.length) {
+    const item = array[i]
+    //主项
+    if (isFun(item)) {
+      array.splice(i, 1)
+      continue
+    }
+    //子项
+    if (item.children) {
+      arrayRemoveItem(item.children, isFun, boolRemovePrototype)
+
+      if (item.children.length == 0 && boolRemovePrototype) {
+        delete item.children
+      }
+    }
+    i++
+  }
+}
+
+/**
+ * Key所在的数组、索引、对象
+ * @param {*} data 
+ * @param {*} key 
+ * @param {*} callback 
+ */
+export function loop(data, key, callback) {
+  data.forEach((item, index, arr) => {
+    if (item.key === key) {
+      return callback(item, index, arr);
+    }
+    if (item.children) {
+      return loop(item.children, key, callback);
+    }
+  });
 }

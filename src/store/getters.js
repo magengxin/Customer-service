@@ -1,4 +1,5 @@
 const getters = {
+  lang:state=>state.app.lang,
   sessionId: state => state.app.sessionId,
   //Socket地址
   socketUrl: state => state.app.config.socketUrl,
@@ -11,6 +12,8 @@ const getters = {
   customerInfo: state => state.history.customerInfo,
   caseInfo: state => state.history.caseInfo,
   caselist: state => state.history.caselist,
+  emptyForm: state => state.history.emptyForm,
+  caseInfoIndex: state => state.history.caseInfoIndex,
   spinning: state => state.history.spinning,
   serviceObjects: state => state.chat.serviceObjects,
   sessionList: state => state.chat.sessionList,
@@ -24,7 +27,13 @@ const getters = {
   //客服信息
   agent: state => state.chat.agent,
   //QQ表情
-  qq: state => state.emoji.qq
+  QQFaceList:state=>state.emoji.QQFaceList,
+  //表情表情
+  EmojiList:state=>state.emoji.EmojiList,
+  QQFaceMap:state=>state.emoji.QQFaceMap,
+  EmojiCodeMap:state=>state.emoji.EmojiCodeMap,
+  isSendCtrlEnter:state=>state.app.isSendCtrlEnter,
+  isRelevance:state=>state.app.isRelevance
 };
 
 export default getters

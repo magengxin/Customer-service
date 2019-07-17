@@ -3,12 +3,12 @@
     <a-button
       :disabled="!user.sessionId || !$store.getters.isSocketRun || user.loading"
       @click="isShowModel=true"
-    >转接</a-button>
+    >{{$t('chat.transfer')}}</a-button>
 
     <a-modal
       v-model="isShowModel"
       :maskClosable="false"
-      title="转接用户"
+      :title="$t('chat.transfer.user')"
       :bodyStyle="{padding:'0'}"
       @ok="ok"
     >
@@ -34,7 +34,7 @@
                 icon="reload"
                 style="float:right;"
                 @click="reload"
-              >刷新</a-button>
+              >{{$t('text.refresh')}}</a-button>
             </p>
           </div>
 
@@ -224,7 +224,7 @@ export default {
       }
       this.$store.dispatch("requestTransferSession", {
         sessionId: this.user.sessionId,
-        transferType: null === this.radioValue ? "Workgroup" : "Agent",
+        transferType: null === this.radioValue ? "Group" : "Agent",
         transferId:
           null === this.radioValue ? this.groupId[0] : this.radioValue,
         transferRemark: this.form.getFieldValue("remork")

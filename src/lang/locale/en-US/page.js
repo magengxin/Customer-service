@@ -3,21 +3,36 @@ export default {
   /**
    * public
    */
-  'button.add': 'Add',
-  'button.edit': 'Edit',
-  'button.save': 'Save',
-  'button.cancel': 'Cancel',
-  'button.delete': 'Delete',
-  'button.moveUp': 'Move up',
-  'button.moveDown': 'Move down',
-  'alert.delete': 'Are you sure to delete?',
+  'text.add': 'Add',
+  'text.edit': 'Edit',
+  'text.save': 'Save',
+  'text.cancel': 'Cancel',
+  'text.delete': 'Delete',
+  'text.moveUp': 'Move up',
+  'text.moveDown': 'Move down',
+  'text.confirm': 'Are you sure to delete?',
   'text.name': 'Name',
   'text.action': 'Operation',
-  'text.id': 'id',
+  'text.send': 'Send',
+  'text.refresh': 'Refresh',
+  /**
+   * 聊天页面-会话列表
+   */
+  'online.people': 'people',
+  'online.group.waiting': 'Group waiting',
+  'online.people.waiting': 'Personal waiting',
+  'online.text': 'Access',
+  'online.open': 'Open',
+  'online.close': 'Close',
+  'online.confirm.close': 'Close?',
+   /**
+   * 聊天页面-聊天
+   */
+  'chat.transfer': 'Transfer',
+  'chat.transfer.user': 'Transfer user',
   /**
    * chat record
    */
-  'button.refresh': 'Refresh',
   'button.cell': 'Initiate a conversation',
   'button.customer.name': 'Please enter the customer name',
   'button.customer.list': 'Customer List',

@@ -156,10 +156,14 @@ module.exports = {
         ws: false,
         changeOrigin: true
       },
-      '/rest': {
+      '/rest/ice': {
         target: ' http://pngit-cn-v0010.cn.hpicorp.net:7300/mock/5cde36fdf583341aee8b8830/css-apj-support',
         ws: false,
-        changeOrigin: true
+        changeOrigin: true,
+        /**
+       * 转发特殊处理，ITG与生产环境存在 /rest/cm
+       */
+        pathRewrite: { '^/rest/ice': '/rest' }
       }
     }
   },

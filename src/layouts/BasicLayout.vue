@@ -31,6 +31,9 @@ export default {
     return {
       current: ["work"]
     };
+  },
+  created(){
+    this.current=[this.$route.name]
   }
 };
 </script>

@@ -14,16 +14,25 @@ export default {
   'text.name': '名称',
   'text.action': '操作',
   'text.send': '发送',
+  'text.refresh': '刷新',
   /**
-   * 聊天页面
+   * 聊天页面-会话列表
    */
-  'text.people': '人',
-  'text.group.waiting': '组等待接入',
-  'text.people.waiting': '个人待接入',
+  'online.people': '人',
+  'online.group.waiting': '组等待接入',
+  'online.people.waiting': '个人待接入',
+  'online.text': '接入',
+  'online.open': '开',
+  'online.close': '关',
+  'online.confirm.close': '确认关闭?',
+  /**
+   * 聊天页面-聊天
+   */
+  'chat.transfer': '转接',
+  'chat.transfer.user': '转接用户',
   /**
    * 聊天记录
    */
-  'text.refresh': '刷新',
   'text.cell': '发起会话',
   'text.customer.name': '请输入客户名称',
   'text.customer.list': '客户列表',
