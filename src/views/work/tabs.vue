@@ -16,29 +16,26 @@
     <a-tab-pane :tab="$t('tabs.customer')" key="2">
       <a-tabs defaultActiveKey="1" size="small" class="tabs-small chat-tabs">
         <a-tab-pane :tab="$t('text.customer.basicMessage')" key="1">
-          <span class="case-title mb10 bold">{{$t('text.customer.basicData')}}</span>
-          <customer-info />
+          <customer-info :customerInfo="customerInfo"/>
 
-          <div class="case-title case-tit mb10 bold">
-            {{$t('text.customer.assetsMessage')}}
-            <a-icon type="sync" style="color: #1890ff;"></a-icon>
-          </div>
           <customer-assets />
         </a-tab-pane>
         <a-tab-pane :tab="$t('text.customer.assetsMessage')" key="2" forceRender>
-          <span class="case-title mb10 bold">{{$t('text.customer.HPMessage')}}</span>
-          <customer-asset />
+          <customer-asset :customerInfo="customerInfo"/>
         </a-tab-pane>
       </a-tabs>
 
-      <span class="case-title mb10 bold">{{$t('text.customer.caseMessage')}}</span>
-      <case-info></case-info>
-      <case-form></case-form>
+      <div class="padding6 pt-3">
+        <case-info :caseData="caseData" :caseInfoIndex="caseInfoIndex"/>
+        <case-form :caseInfo="caseInfo" :customerInfo="customerInfo" :emptyForm="emptyForm"/>
+      </div>
     </a-tab-pane>
   </a-tabs>
 </template>
 <script>
-import KnowledgeQuickReply from "./knowledge/KnowledgeQuickReply";
+  import {mapState} from "vuex";
+
+  import KnowledgeQuickReply from "./knowledge/KnowledgeQuickReply";
 // import KnowledgeFaq from "./knowledge/KnowledgeFaq";
 // import KnowledgeVideo from "./knowledge/KnowledgeVideo";
 import CustomerInfo from "@/views/history/customer/CustomerInfo";
@@ -60,6 +57,18 @@ export default {
     return {
       mode: "top"
     };
+  },
+
+  computed: {
+    ...mapState({
+      customerInfo: state => state.history.customerInfo,
+
+      caseData: state => state.history.caselist,
+      caseInfoIndex: state => state.history.caseInfoIndex,
+
+      caseInfo: state => state.history.caseInfo,
+      emptyForm: state => state.history.emptyForm,
+    })
   },
   methods: {}
 };

@@ -9,9 +9,10 @@
           </a-col>
           <a-col :span="4"
                  class="create-session"
-                 >
+          >
             <a-button icon="message" size="small"
-                      @click="createSession">{{$t('text.cell')}}</a-button>
+                      @click="createSession">{{$t('text.cell')}}
+            </a-button>
           </a-col>
           <a-col :span="12">
             <a-input-search
@@ -69,15 +70,15 @@
                      @mouseleave="leave()"
                      :class="{active:current == index,active1:current1 == index}">
 
-          <div class="w40 radius"><img :src="item.headPic" alt="头像">{{item.nickname}}</div>
-          <div class="w30 ">{{item.lastCloseTs}}</div>
-          <div class="w30 ">{{item.lastAgentName}}</div>
+          <div class="w-40 radius"><img :src="item.headPic" alt="头像">{{item.nickname}}</div>
+          <div class="w-30 ">{{item.lastCloseTs}}</div>
+          <div class="w-30 ">{{item.lastAgentName}}</div>
 
         </a-list-item>
         <div slot="header" class="list-head flex-align-center">
-          <div class="w40 ">{{$t('text.table.nickname')}}</div>
-          <div class="w30 ">{{$t('text.table.lastTime')}}</div>
-          <div class="w30 ">{{$t('text.table.connectAgent')}}</div>
+          <div class="w-40 ">{{$t('text.table.nickname')}}</div>
+          <div class="w-30 ">{{$t('text.table.lastTime')}}</div>
+          <div class="w-30 ">{{$t('text.table.connectAgent')}}</div>
         </div>
       </a-list>
 
@@ -142,8 +143,8 @@
         this.current1 = 0;
         if (page) {
           this.paginationList.current = page;
-        }else{
-          this.paginationList.current  = 1;
+        } else {
+          this.paginationList.current = 1;
         }
         this.getCustomerList(this.customer);
       },
@@ -201,11 +202,14 @@
 
         getCustomerList(data)
             .then(res => {
+              let that = this;
               if (res.code === 0) {
-                this.loading = false;
+                that.loading = false;
 
-                this.customerList = res.data.contents;
-                this.lastAgentId = this.customerList[0].lastAgentId;
+                that.customerList = res.data.contents;
+
+                that.lastAgentId = that.customerList[0].lastAgentId;
+                that.getCustomerInfo(that.lastAgentId); // 获取客戶基本信息
               }
             })
             .catch(error => {
@@ -292,11 +296,11 @@
         this.current = null;
       },
       //发起会话
-      createSession(){
-        if(this.columnIndex==0){
-          this.$store.dispatch('requestCreateSession',this.customerList[this.columnIndex].customerId)
+      createSession() {
+        if (this.columnIndex == 0) {
+          this.$store.dispatch('requestCreateSession', this.customerList[this.columnIndex].customerId)
           this.$message.success('发起会话申请');
-        }else{
+        } else {
           this.$message.error('未选择客户');
         }
       }
@@ -314,32 +318,12 @@
   }
 
   .ant-row {
-    margin-left: 0!important;
-    margin-right: 0!important;
-    margin-bottom: 0!important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-bottom: 0 !important;
   }
 
   /* active样式 */
-  .w10 {
-    width: 10%;
-  }
-
-  .w20 {
-    width: 20%;
-  }
-
-  .w25 {
-    width: 25%;
-  }
-
-  .w30 {
-    width: 30%;
-  }
-
-  .w40 {
-    width: 40%;
-  }
-
   .textalc {
     text-align: center;
   }
@@ -364,16 +348,19 @@
   .customer {
     .top-info {
       [class*=ant-col] {
-        padding: 0!important;
+        padding: 0 !important;
       }
-      .sync{
+
+      .sync {
         margin-right: 12px;
         width: 60px;
       }
-      .create-session{
+
+      .create-session {
         margin-right: 12px;
         width: 100px;
       }
+
       .ant-btn-sm {
         width: 100%;
         line-height: 20px;

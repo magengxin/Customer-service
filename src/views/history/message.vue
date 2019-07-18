@@ -9,33 +9,34 @@
   </a-layout>
 </template>
 <script>
-import ChatContent from "@/components/ChatContent/ChatContent";
+  import ChatContent from "@/components/ChatContent/ChatContent";
 
-export default {
-  name: "chat",
-  components: {
-    ChatContent
-  },
-  data() {
-    return {
-      data: [{ name: "1" }]
-    };
-  },
-  methods: {
-    onChange(pageNumber) {
-      console.log("Page: ", pageNumber);
+  export default {
+    name: "chat",
+    components: {
+      ChatContent
+    },
+    data() {
+      return {
+        data: [{name: "1"}]
+      };
+    },
+    methods: {
+      onChange(pageNumber) {
+        console.log("Page: ", pageNumber);
+      }
     }
-  }
-};
+  };
 </script>
 <style lang="less" scoped>
-.chat_main {
-  height: 100%;
-  overflow: hidden;
-}
-.ant-layout-footer{
-  padding: 10px 0px;
-  margin: 0 auto;
-}
+  .chat_main {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .ant-layout-footer {
+    padding: 10px 0px;
+    margin: 0 auto;
+  }
 </style>
 

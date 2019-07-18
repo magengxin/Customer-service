@@ -2,7 +2,7 @@
   <div>
     <div class="content-box">
       <span class="mr-3 usecode">PINCODE:{{$store.getters.pinCode}}</span>
-      <lang-select class="langico"/>
+      <lang-select class="langico" />
       <a-dropdown>
         <span class="action ant-dropdown-link user-dropdown-menu userinfo">
           <a-avatar size="small" :src="$store.getters.agent.headUrl" />
@@ -10,8 +10,8 @@
         </span>
         <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
           <a-menu-item key="1">
-            <a href="javascript:;">
-              <a-icon type="logout"/>
+            <a href="javascript:;" @click="logout">
+              <a-icon type="logout" />
               <span>退出登录</span>
             </a>
           </a-menu-item>
@@ -25,6 +25,11 @@ import LangSelect from "@/components/LangSelect/LangSelect";
 export default {
   components: {
     LangSelect
+  },
+  methods: {
+    logout() {
+      window.location.href = this.$store.getters.root + "/logout";
+    }
   }
 };
 </script>
@@ -33,19 +38,18 @@ export default {
 .action .avatar {
   margin: 8px 8px 8px 0;
 }
-
 </style>
 <style lang="less" scoped>
 /* 0626 */
-.content-box{
+.content-box {
   position: relative;
-  .usecode{
+  .usecode {
     position: absolute;
     top: -20px;
     right: -7px;
     height: 1px;
   }
-  .langico{
+  .langico {
     border-right: 1px solid #f1f3f5;
     height: 48px;
     display: inline-block;
@@ -53,12 +57,12 @@ export default {
     padding: 0 10px;
     float: left;
     margin-right: 10px;
-    transition: all .3s;
+    transition: all 0.3s;
   }
-  .userinfo{
-    margin:8px 8px 8px 0;
+  .userinfo {
+    margin: 8px 8px 8px 0;
   }
-  .langico:hover{
+  .langico:hover {
     background: #f9f9f9;
   }
 }

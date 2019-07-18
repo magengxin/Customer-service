@@ -1,5 +1,7 @@
 <template>
-  <div id="components-form-demo-advanced-search" class="customer-info border-t padding-b10">
+  <div id="components-form-demo-advanced-search" class="customer-info border-t pb-3">
+    <span class="case-title mb-2 font-weight-bold">{{$t('text.customer.basicData')}}</span>
+
     <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
 
       <a-row :gutter="16">
@@ -10,7 +12,7 @@
                     :label-col="{ span: 8 }"
                     :wrapper-col="{ span: 12 }"
             >
-              <span >{{customerInfo.id}}</span>
+              <span>{{customerInfo.id}}</span>
             </a-form-item>
           </div>
         </a-col>
@@ -33,7 +35,8 @@
             </a-form-item>
           </div>
         </a-col>
-      </a-row><a-row :gutter="16">
+      </a-row>
+      <a-row :gutter="16">
         <a-col class="gutter-row" :span="8">
           <div class="gutter-box">
             <a-form-item
@@ -52,7 +55,7 @@
             </a-form-item>
           </div>
         </a-col>
-      <a-col class="gutter-row" :span="8">
+        <a-col class="gutter-row" :span="8">
           <div class="gutter-box">
             <a-form-item
                     label="联系电话"
@@ -70,7 +73,7 @@
             </a-form-item>
           </div>
         </a-col>
-      <a-col class="gutter-row" :span="8">
+        <a-col class="gutter-row" :span="8">
           <div class="gutter-box">
             <a-form-item
                     label="电子邮件"
@@ -214,94 +217,95 @@
   </div>
 </template>
 <script>
-import {mapState} from "vuex";
 
-import {putCustomerInfo} from "@/api/history";
+  import {putCustomerInfo} from "@/api/history";
 
-export default {
-  data() {
-    return {
-      isEdit: false, // 是否编辑
-      isEditStatus: false, // 是否编辑
-      form: this.$form.createForm(this),
-    };
-  },
-  computed: {
-    ...mapState({
-      customerInfo: state => state.history.customerInfo
-    })
-  },
-  methods: {
-    // 提交数据
-    handleSearch(e) {
-      e.preventDefault();
-      this.form.validateFields((error, values) => {
-        values['channelCustomerId'] = this.customerInfo.channelCustomerId;
-        values['channelCode'] = this.customerInfo.channelCode;
-        values['id'] = this.customerInfo.id;
-
-        if (values['sex'] == '男') {
-          values['sex'] = 1
-        } else {
-          values['sex'] = 0
-        }
-
-        putCustomerInfo(values.id, values)
-            .then(res => {
-              if (res.code === 0) {
-                this.$store.commit('changeSpinning', true);
-
-                setTimeout(() => {
-                  this.$store.commit('changeSpinning', false);
-
-                  this.$message.success(res.msg);
-                  this.cancelEdit();
-                }, 1000);
-              }
-            })
-            .catch(error => {
-              console.log("error", error);
-            })
-      });
+  export default {
+    props: {
+      customerInfo: Object
     },
-    // 编辑数据
-    edit() {
-      this.isEditStatus = true;
-      this.isEdit = true;
+    data() {
+      return {
+        isEdit: false, // 是否编辑
+        isEditStatus: false, // 是否编辑
+        form: this.$form.createForm(this),
+      };
     },
-    // 取消编辑
-    cancelEdit() {
-      this.isEditStatus = false;
-      this.isEdit = false;
-    },
-    // 重置表单
-    handleReset() {
-      this.form.resetFields();
+    methods: {
+      // 提交数据
+      handleSearch(e) {
+        e.preventDefault();
+        this.form.validateFields((error, values) => {
+          values['channelCustomerId'] = this.customerInfo.channelCustomerId;
+          values['channelCode'] = this.customerInfo.channelCode;
+          values['id'] = this.customerInfo.id;
+
+          if (values['sex'] == '男') {
+            values['sex'] = 1
+          } else {
+            values['sex'] = 0
+          }
+
+          putCustomerInfo(values.id, values)
+              .then(res => {
+                if (res.code === 0) {
+                  this.$store.commit('changeSpinning', true);
+
+                  setTimeout(() => {
+                    this.$store.commit('changeSpinning', false);
+
+                    this.$message.success(res.msg);
+                    this.cancelEdit();
+                  }, 1000);
+                }
+              })
+              .catch(error => {
+                console.log("error", error);
+              })
+        });
+      },
+      // 编辑数据
+      edit() {
+        this.isEditStatus = true;
+        this.isEdit = true;
+      },
+      // 取消编辑
+      cancelEdit() {
+        this.isEditStatus = false;
+        this.isEdit = false;
+      },
+      // 重置表单
+      handleReset() {
+        this.form.resetFields();
+      }
     }
-  }
-};
+  };
 </script>
 <style lang="less" scoped>
 
-  .ant-advanced-search-form .ant-row.ant-form-item{
-  margin-bottom: 0;
-}
-.ant-advanced-search-form .ant-form-item {
-  display: flex;
-}
-.ant-advanced-search-form .ant-form-item-control-wrapper {
-  flex: 1;
-}
-#components-form-demo-advanced-search .ant-form {
-  max-width: none;
-}
-#components-form-demo-advanced-search .search-result-list {
-  margin-top: 16px;
-  border: 1px dashed #e9e9e9;
-  border-radius: 6px;
-  background-color: #fafafa;
-  min-height: 200px;
-  text-align: center;
-  padding-top: 80px;
-}
+  .ant-advanced-search-form .ant-row.ant-form-item {
+    margin-bottom: 0;
+  }
+
+  .ant-advanced-search-form .ant-form-item {
+    display: flex;
+  }
+
+  .ant-advanced-search-form .ant-form-item-control-wrapper {
+    flex: 1;
+  }
+
+  #components-form-demo-advanced-search .ant-form {
+    max-width: none;
+  }
+
+  #components-form-demo-advanced-search .search-result-list {
+    margin-top: 16px;
+    border: 1px dashed #e9e9e9;
+    border-radius: 6px;
+    background-color: #fafafa;
+    min-height: 200px;
+    text-align: center;
+    padding-top: 80px;
+  }
 </style>

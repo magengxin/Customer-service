@@ -28,6 +28,11 @@ export default new Router({
           meta: { title: '聊天记录', keepAlive: false }
         }
       ]
-    }
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      component: () => import('@/views/Logout')
+    },
   ]
 })

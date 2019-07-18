@@ -1,5 +1,7 @@
 <template>
   <div class="caseInfo border-t">
+    <span class="case-title mb-2 font-weight-bold">{{$t('text.customer.caseMessage')}}</span>
+
     <scroll>
       <a-list
               :dataSource="caseData"
@@ -10,18 +12,18 @@
                      @mouseleave="leave()"
                      :class="{active:current == index,active1:current1 == index}"
         >
-          <div class="w25 textalc arrow">
+          <div class="w-25 text-center arrow">
             <div class="radius"></div>
-            <div>{{item.accessTs}}</div>
+            <div class="text-truncate">{{item.accessTs}}</div>
           </div>
-          <div class="w10 textalc">{{item.agentName}}</div>
-          <div class="w10 textalc">{{item.status}}</div>
-          <div class="w20 textalc">{{item.caseType}}</div>
-          <div class="w10 textalc">{{item.spos}}</div>
-          <div class="w25 textalc">{{item.endTs}}</div>
+          <div class="w-10 text-center text-truncate">{{item.agentName}}</div>
+          <div class="w-10 text-center text-truncate">{{item.status}}</div>
+          <div class="w-20 text-center text-truncate">{{item.caseType}}</div>
+          <div class="w-10 text-center text-truncate">{{item.spos}}</div>
+          <div class="w-25 text-center text-truncate">{{item.endTs}}</div>
         </a-list-item>
         <div slot="header" class="list-head flex-align-center">
-          <div v-for="item in caseInfo" :key="item.dataIndex" :class="[item.width, 'textalc']">{{item.title}}</div>
+          <div v-for="item in caseInfo" :key="item.dataIndex" :class="[item.width, 'text-center text-truncate']">{{item.title}}</div>
         </div>
       </a-list>
     </scroll>
@@ -29,76 +31,61 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
-
-export default {
-  name: "CaseInfo",
-  data() {
-    return {
-      current:null,
-      current1: 0,
-      caseInfo: [
-        { title: "接入时间", dataIndex: "accessTs", width: 'w25'},
-        { title: "客服", dataIndex: "agentName", width: 'w10'},
-        { title: "状态", dataIndex: "status", width: 'w10'},
-        { title: "升级类型", dataIndex: "caseType", width: 'w20'},
-        { title: "SPOS", dataIndex: "spos", width: 'w10'},
-        { title: "关闭时间", dataIndex: "endTs", width: 'w25'}
-      ],
-    };
-  },
-  computed: {
-    ...mapState({
-      caseData: state => state.history.caselist,
-      caseInfoIndex: state => state.history.caseInfoIndex,
-    })
-  },
-  watch:{
-    caseInfoIndex(){
-      this.current1 = this.caseInfoIndex;
+  export default {
+    name: "CaseInfo",
+    props: {
+      caseData: Array,
+      caseInfoIndex: Number
+    },
+    data() {
+      return {
+        current: null,
+        current1: 0,
+        caseInfo: [
+          {title: "接入时间", dataIndex: "accessTs", width: 'w-25'},
+          {title: "客服", dataIndex: "agentName", width: 'w-10'},
+          {title: "状态", dataIndex: "status", width: 'w-10'},
+          {title: "升级类型", dataIndex: "caseType", width: 'w-20'},
+          {title: "SPOS", dataIndex: "spos", width: 'w-10'},
+          {title: "关闭时间", dataIndex: "endTs", width: 'w-25'}
+        ],
+      };
+    },
+    watch: {
+      caseInfoIndex() {
+        this.current1 = this.caseInfoIndex;
+      }
+    },
+    methods: {
+      handleClick(item, index) {
+        this.current1 = index;
+        this.$store.commit('getCaseInfo', item); // case详情
+        this.$store.commit('changeCaseInfoIndex', index); // 修改 case table 默认索引
+        this.$store.commit('changeSpinning', true); // 修改全局页面loading
+        setTimeout(() => {
+          this.$store.commit('changeSpinning', false);
+        }, 1000);
+      },
+      enter(index) {
+        this.current = index;
+      },
+      leave() {
+        this.current = null;
+      },
     }
-  },
-  methods: {
-    handleClick(item, index) {
-      this.current1 = index;
-      this.$store.commit('getCaseInfo', item); // case详情
-      this.$store.commit('changeCaseInfoIndex', index); // 修改 case table 默认索引
-      this.$store.commit('changeSpinning', true); // 修改全局页面loading
-      setTimeout(() => {
-        this.$store.commit('changeSpinning', false);
-      }, 1000);
-    },
-    enter( index) {
-      this.current = index;
-    },
-    leave() {
-      this.current = null;
-    },
-  }
-};
+  };
 </script>
 
 <style lang="less" scoped>
-  .w10{
-    width: 10%;
-  }
-  .w20{
-    width: 20%;
-  }
-  .w25{
-    width: 25%;
+  .active {
+    color: deepskyblue;
   }
 
-  .textalc{
-    text-align: center;
-  }
-  .active{
+  .active1 {
     color: deepskyblue;
   }
-  .active1{
-    color: deepskyblue;
-  }
-  .color{
+
+  .color {
     color: #000;
   }
 
@@ -108,27 +95,33 @@ export default {
 
   .caseInfo {
     height: 200px;
-  }
-  .caseInfo .list-head{
-    color: #000;
-  }
-  .caseInfo .ant-list-item{
-    padding: 6px;
     overflow: hidden;
+
+    .list-head {
+      color: #000;
+    }
+
+    .ant-list-item {
+      padding: 6px;
+
+      .arrow {
+        display: flex;
+        justify-items: center;
+        align-items: center;
+
+        .radius {
+          position: relative;
+          margin-right: 4px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: #EAF3F6;
+        }
+      }
+    }
   }
-  .ant-list-item .arrow{
-    display: flex;
-    justify-items: center;
-  }
-  .ant-list-item .arrow .radius{
-    position: relative;
-    margin-right: 4px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #EAF3F6;
-  }
-  .ant-spin-container .ant-list-item:not(:last-child) .arrow .radius:after{
+
+  .ant-spin-container .ant-list-item:not(:last-child) .arrow .radius:after {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -137,10 +130,11 @@ export default {
     display: block;
     width: 4px;
     height: 10px;
-    background: #F8F8F8;
+    background: #d9e8f5;
   }
+
   .ant-list-item.active .radius,
   .ant-list-item.active1 .radius {
-    background: #79C1E6;
+    background: #79C1E6!important;
   }
 </style>

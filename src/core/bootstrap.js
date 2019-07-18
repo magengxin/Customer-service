@@ -37,7 +37,9 @@ export default function Initializer() {
    */
   store.commit('setSendCtrlEnter', Vue.ls.get('setSendCtrlEnter', true))
   store.commit('setRelevance', Vue.ls.get('setRelevance', true))
-
+  store.commit('quickReplyTab', Vue.ls.get('quickReplyTab', '1'))
+  // 国际化
+  store.dispatch('SetLang', Vue.ls.get('SET_LANG', 'zh-CN'))
   /**
    * 业务数据
    */
@@ -45,6 +47,8 @@ export default function Initializer() {
   if (process.env.NODE_ENV == 'production') {
     let u = parseURL(location.href)
     ws =(u.protocol === 'https' ? 'wss:/' : 'ws:/') + u.host + (u.port != 80 ? ':' + u.port : '') + u.path.substring(0, u.path.indexOf('/', 1)) + '/ws/ice'
+
+    store.commit('SET_ROOT', u.path.substring(0, u.path.indexOf('/', 1)))
   }
   //发起连接
   connection({ url: ws })

@@ -1,5 +1,5 @@
 <template>
-  <a-tabs size="small" class="tabs-small chat-tabs">
+  <a-tabs size="small" class="tabs-small chat-tabs" :defaultActiveKey="$store.getters.quickReplyTab" @change="SwitchTab">
     <a-tab-pane :tab="$t('tabs.public')" key="1">
       <quick-reply />
     </a-tab-pane>
@@ -14,6 +14,11 @@ import PrivateQuickReply from "./quickReply/PrivateQuickReply";
 export default {
   components:{
     QuickReply,PrivateQuickReply
+  },
+  methods:{
+    SwitchTab(activeKey){
+      this.$store.dispatch('quickReplyTab',activeKey)
+    }
   }
 }
 </script>

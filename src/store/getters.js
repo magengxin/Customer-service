@@ -33,7 +33,9 @@ const getters = {
   QQFaceMap:state=>state.emoji.QQFaceMap,
   EmojiCodeMap:state=>state.emoji.EmojiCodeMap,
   isSendCtrlEnter:state=>state.app.isSendCtrlEnter,
-  isRelevance:state=>state.app.isRelevance
+  isRelevance:state=>state.app.isRelevance,
+  root:state=>state.app.root,
+  quickReplyTab:state=>state.app.quickReplyTab
 };
 
 export default getters

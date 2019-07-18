@@ -3,9 +3,9 @@
     <a-layout-sider width="460px" class="customer-list">
       <customer-list></customer-list>
     </a-layout-sider>
-        <a-layout-sider width="400px" class="message">
-          <message></message>
-        </a-layout-sider>
+    <a-layout-sider width="400px" class="message">
+      <message></message>
+    </a-layout-sider>
     <a-layout-content class="tabs-scroll">
       <a-spin :spinning="loading" class="spingH">
         <tabs></tabs>

@@ -11,7 +11,9 @@ const app = {
     //开启联想
     isRelevance: true,
     //语言
-    lang:'zh-CN'
+    lang: 'zh-CN',
+    root: '/#',
+    quickReplyTab:'1'
   },
   mutations: {
     setSessionId: (state, sessionId) => {
@@ -26,6 +28,12 @@ const app = {
     SET_LANG: (state, lang) => {
       state.lang = lang
     },
+    SET_ROOT: (state, root) => {
+      state.root = root
+    },
+    quickReplyTab: (state, val) => {
+      state.quickReplyTab = val
+    },
   },
   actions: {
     setSendCtrlEnter({ commit }, is) {
@@ -36,12 +44,20 @@ const app = {
       commit('setRelevance', is)
       Vue.ls.set('setRelevance', is)
     },
-    SetLang ({ commit }, lang) {
+    SetLang({ commit }, lang) {
       return new Promise(resolve => {
         commit('SET_LANG', lang)
+        Vue.ls.set('SET_LANG', lang)
         loadLanguageAsync(lang)
         resolve()
       })
+    },
+    SetRoot({ commit }, root) {
+      commit('SET_ROOT', root)
+    },
+    quickReplyTab({ commit }, val) {
+      Vue.ls.set('quickReplyTab', val)
+      commit('quickReplyTab', val)
     }
   }
 }
